@@ -10,7 +10,7 @@
     "bignumber.js": "^7.0.1",
     "rxjs": "^6.1.0",
     "rxjs-compat": "^6.1.0",
-    "web3": "file:../web3.js",
+    "web3": "^1.0.0-beta.34",
     "web3-provider-engine": "^14.0.5"
   },
   "devDependencies": {

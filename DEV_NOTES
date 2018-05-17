@@ -4,3 +4,8 @@ ledger implementation of hardware wallet functions mostly.  it does not error (b
 - test/ledgerTest.js completes without errors, but I am not happy with this implementation as:
  1. It relies heavily on Metamask/provider-engine directly
  2. It is too callback/nested async heavy and this is causing deep nesting of functions
+ -- Reimplemented and It is much better (current Implementation)
+
+
+
+- Web3 is depending on obscure libraries
