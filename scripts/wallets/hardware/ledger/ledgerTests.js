@@ -1,0 +1,2 @@
+const testRunner = require('../../walletTest')
+
