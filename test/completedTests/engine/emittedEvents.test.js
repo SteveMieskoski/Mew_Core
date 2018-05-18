@@ -1,7 +1,7 @@
 const test = require('tape')
-const MewEngine = require('../scripts/provider/mewEngine')
-const fixtures = require('./fixtures')
-const common = require('../scripts/common/index')
+const MewEngine = require('../../../scripts/provider/mewEngine')
+const fixtures = require('../../fixtures/index')
+const common = require('../../../scripts/common/index')
 const createPayload = common.createPayload
 const Web3 = require('web3')
 
@@ -15,7 +15,11 @@ test('allow uncaught and permitted method to fall through', function (t) {
 
   var engine = new MewEngine()
   let HttpProvider = new fixtures.HttpProvider()
-  engine.addTransport(HttpProvider)
+  engine.setTransport(HttpProvider)
+  // engine.on('newListener', (event, listener) => {
+  //   console.log("event", event); // todo remove dev item
+  //   console.log("listener", listener); // todo remove dev item
+  // })
   let web3 = new Web3(engine)
 
   web3.eth.getCoinbase()

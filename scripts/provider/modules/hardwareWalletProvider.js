@@ -71,7 +71,12 @@ class HardwareWalletProvider extends ModuleInterface {
         // process normally
         this.walletProvider.getAccounts((err, accounts) => {
           if (err) return end(err)
-          end(null, accounts)
+          if(!Array.isArray(accounts)){
+            end(null, [accounts])
+          } else {
+            end(null, accounts)
+          }
+
         })
         return
 

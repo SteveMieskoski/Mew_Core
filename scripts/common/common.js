@@ -9,7 +9,8 @@ module.exports = {
   isStrongPass,
   hexToAscii,
   isAlphaNumeric,
-  getRandomBytes
+  getRandomBytes,
+  isNumeric
 }
 
 function createRandomId () {
@@ -92,3 +93,7 @@ function isAlphaNumeric (value) {
 function getRandomBytes (num) {
   return ethCrypto.randomBytes(num)
 }
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+};

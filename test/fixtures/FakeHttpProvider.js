@@ -12,6 +12,7 @@ class FakeHttpProvider {
   }
 
   setNetwork(details){
+    details = details ? details : {}
     this.host = details.SERVERURL
     this.user = details.user
     this.password = details.password

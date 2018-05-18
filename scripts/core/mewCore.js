@@ -34,6 +34,7 @@ MewCore.setupProviders = function (providersArray = []) {
 }
 
 MewCore.addHardwareWallets = function (hardwareWallets) {
+  if(!hardwareWallets) return
   for (let i = 0; i < hardwareWallets.length; i++) {
     this.walletAcess = hardwareWallets[i] // expose wallet on MewCore
     this.mewEngine.addProvider(new HardwareWalletProvider(hardwareWallets[i]))

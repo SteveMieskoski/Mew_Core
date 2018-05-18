@@ -1,8 +1,8 @@
 const test = require('tape')
-const MewEngine = require('../scripts/provider/mewEngine')
+const MewEngine = require('../../scripts/provider/mewEngine')
 const MewRelay = require('../scripts/provider/engine/mewRelay')
-const fixtures = require('./fixtures')
-const common = require('../scripts/common/index')
+const fixtures = require('../fixtures/index')
+const common = require('../../scripts/common/index')
 const createPayload = common.createPayload
 const Web3 = require('web3')
 

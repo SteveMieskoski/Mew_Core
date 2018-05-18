@@ -34,8 +34,8 @@ let txParams = {
   gas: '0x1234567890',
 };
 // content portion must be an array
-let result = mewcore.web3.eth.accounts.wallet.decrypt(fileContent, 'test!')
-console.log("currentProvider", mewcore.web3.currentProvider); // todo remove dev item
+let result = mewcore.web3.eth.accounts.wallet.decrypt([fileContent], 'test!')
+// console.log("currentProvider", mewcore.web3.currentProvider); // todo remove dev item
 console.log("decrypt result", result); // todo remove dev item
 // mewcore.web3.eth.accounts.wallet.add(result);
 mewcore.web3.eth.getAccounts()

@@ -9,3 +9,10 @@ ledger implementation of hardware wallet functions mostly.  it does not error (b
 
 
 - Web3 is depending on obscure libraries
+Examples:
+    https://github.com/MaiaVictor/eth-lib <- relying on this for much of what ethereumjs-utils previously provided
+    https://github.com/ethjs/ethjs-unit <- which is just a port of web3.js unit code
+
+- Web3 1.0.0 is unstable (I've come across bugs or strange setups at least twice so far.
+
+- Web3 1.0.0 is very (how do i say it) confusing. not in the code, but it is broken up into so many pieces that it feels unwieldy

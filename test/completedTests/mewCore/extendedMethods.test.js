@@ -1,18 +1,18 @@
 const test = require('tape')
-const MewEngine = require('../scripts/provider/mewEngine')
-const fixtures = require('./fixtures/index')
-const common = require('../scripts/common/index')
+const MewEngine = require('../../../scripts/provider/mewEngine')
+const fixtures = require('../../fixtures/index')
+const common = require('../../../scripts/common/index')
 const createPayload = common.createPayload
 const Web3 = require('web3')
-const MewCore = require('../scripts/core/index')
-const GenerateTransaction = require('../scripts/provider/modules/generateTransaction.js')
+const MewCore = require('../../../scripts/core/index')
+const GenerateTransaction = require('../../../scripts/provider/modules/generateTransaction.js')
 
 test('allow uncaught and permitted method to fall through', function (t) {
   t.plan(1)
 
   const web3Extensions = [
     {
-      provider: GenerateTransaction,
+      provider: new GenerateTransaction(),
       providerOptions: undefined,
       method: 'generate_transaction',
       methodName: 'generateTransaction',

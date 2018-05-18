@@ -4,13 +4,17 @@ const commonRequires = require('./commonRequires')
 const signUtils = require('./signUtils')
 const ethFuncs = require('./ethFuncs')
 const ethUnits = require('./etherUnits')
+const validation = require('./validation')
+const ens = require('./ens')
 
 module.exports = {
   ...ethUnits,
   ...ethFuncs,
   ...common,
   ...commonRequires,
-  ...signUtils
+  ...signUtils,
+  validation,
+  ens
 }
 // module.exports = {
 //   createRandomId: common.createRandomId,

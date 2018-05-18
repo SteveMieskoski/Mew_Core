@@ -1,5 +1,5 @@
 const test = require('tape')
-const LedgerWallet = require('./ledgerWallet')
+const LedgerWallet = require('../../../../scripts/wallets/hardware/ledger/ledgerWallet')
 
 test('Sign Transaction', function (t) {
   t.plan(2)

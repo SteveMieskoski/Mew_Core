@@ -1,13 +1,13 @@
 const test = require('tape')
-const MewEngine = require('../scripts/provider/mewEngine')
-const FixtureProvider = require('./fixtures/fixtureProvider')
-const common = require('../scripts/common/index')
+const MewEngine = require('../../../../scripts/provider/mewEngine')
+const FixtureProvider = require('../../../fixtures/fixtureProvider')
+const common = require('../../../../scripts/common/index')
 const createPayload = common.createPayload
 const ethUtil = common.ethUtil
-const injectMetrics = require('./fixtures/injectSubproviderMetrics')
+const injectMetrics = require('../../../fixtures/injectSubproviderMetrics')
 const Transaction = common.tx
-const LedgerWallet = require('../scripts/wallets/hardware/ledger/ledgerWallet')
-const HardwareWalletProvider = require('../scripts/provider/modules/hardwareWalletProvider')
+const LedgerWallet = require('../../../../scripts/wallets/hardware/ledger/ledgerWallet')
+const HardwareWalletProvider = require('../../../../scripts/provider/modules/hardwareWalletProvider')
 
 const ledgerAddress = '0x7676E10eefc7311970A12387518442136ea14D81'
 /**
@@ -16,6 +16,7 @@ const ledgerAddress = '0x7676E10eefc7311970A12387518442136ea14D81'
 test('sign transaction', function (t) {
   t.plan(4)
 
+  let signedTx = '0xf862808085123456789094e87395820dc5c005c2c580091b9aed220240b099018026a0c5d4e417e0a1e98e3fdd71b7b76a9b48880d1a7626f1cacdbc028678524ce473a05c67e5f4955d7f7ad20f4ac7bb13acbaf4ebf3bc53882747d7e04ab36f4e31d7'
   var privateKey = new Buffer('cccd8f4d88de61f92f3747e4a9604a0395e6ad5138add4bec4a2ddf231ee24f9', 'hex')
   var address = new Buffer('1234362ef32bcd26d3dd18ca749378213625ba0b', 'hex')
   var addressHex = '0xE87395820dC5c005c2c580091b9aEd220240B099'
@@ -43,7 +44,8 @@ test('sign transaction', function (t) {
   engine.sendAsync(createPayload(txPayload), function (err, response) {
     t.ifError(err, 'did not error')
     t.ok(response, 'has response')
-
+    t.equal(response.result, signedTx, "Transaction properly signed")
+console.log(response); // todo remove dev item
     // intial tx request
     t.equal(providerA.getWitnessed('eth_signTransaction').length, 1, 'providerA did see "signTransaction"')
     t.equal(providerA.getHandled('eth_signTransaction').length, 1, 'providerA did handle "signTransaction"')
@@ -126,7 +128,7 @@ test('sign transaction', function (t) {
 
 test('sign message', function (t) {
   t.plan(3)
-
+  let signedMessage = '0xc7be115376fb5674ba29b30a7b19f6009994e32bc6cd8fbd05c9a7c926a9d10704152549ec75ea2dd833eea1f45e1d7161d5901203d8496f540bfdad944251e901'
   // var privateKey = new Buffer('cccd8f4d88de61f92f3747e4a9604a0395e6ad5138add4bec4a2ddf231ee24f9', 'hex')
   var addressHex = ledgerAddress
 
@@ -153,6 +155,8 @@ test('sign message', function (t) {
     console.log(err, response); // todo remove dev item
     t.ifError(err, 'did not error')
     t.ok(response, 'has response')
+    t.equal(response.result, signedMessage, "Transaction properly signed")
+    console.log(response); // todo remove dev item
 
     t.equal(response.result, signature, 'signed response is correct')
 
