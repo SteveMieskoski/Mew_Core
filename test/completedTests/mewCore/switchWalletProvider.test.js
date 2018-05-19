@@ -8,6 +8,8 @@ const MewCore = require('../../../scripts/core/index')
 const GenerateTransaction = require('../../../scripts/provider/modules/generateTransaction.js')
 const HttpTransport = require('../../../scripts/provider/modules/httpTransport')
 const FromFile = require('../../../scripts/wallets/software/fromFile')
+const LedgerWallet = require('../../../scripts/wallets/hardware/ledger')
+
 
 let signedMessage = '0x47e43e737ff6711e1ad31ca09fb7bc1322a3bb83b2a3790e146289778ab842da1840ccb29e5c0382456251f4a1be50530265416942963d6b2ac987b8e082ec191c'
 let signedTransaction = '0xf86c808504a817c800825208943535353535353535353535353535353535353535880de0b6b3a7640000801ba017fd0e39aa3ff47d46f582f9c3459f18771667df758e9ad8995881695217f24ca03adcea5af748f5dde51898607ae1e09af6f6dfd37f6fd0b2601d109fc0028f3d'
@@ -67,12 +69,13 @@ test('use web3 methods to getAccount (Address) and sign message via Private Key'
         "eth_estimateGas": "0x5af3107a4000"
       })
     ],
-    hardwareWallets: [
-      new FromFile(optionsManualPrivateKey)
-    ]
+    wallet: new LedgerWallet()
   }
 
+  let fromFile = new FromFile(optionsManualPrivateKey)
+
   const mewcore = MewCore.init(demoSignConfig)
+  mewcore.replaceWallet(fromFile)
 
   mewcore.web3.eth.getAccounts()
     .then(_account => {
@@ -114,12 +117,13 @@ test('use web3 methods to getAccount (Address) and sign transaction via Private 
         "eth_estimateGas": "0x5af3107a4000"
       })
     ],
-    hardwareWallets: [
-      new FromFile(optionsManualPrivateKey)
-    ]
+    wallet: new LedgerWallet()
   }
 
+  let fromFile = new FromFile(optionsManualPrivateKey)
+
   const mewcore = MewCore.init(demoSignConfig)
+  mewcore.replaceWallet(fromFile)
 
   mewcore.web3.eth.getAccounts()
     .then(_account => {
@@ -170,12 +174,13 @@ test('use web3 methods to getAccount (Address) and get balance via Private Key',
         "eth_estimateGas": "0x5af3107a4000"
       })
     ],
-    hardwareWallets: [
-      new FromFile(optionsManualPrivateKey)
-    ]
+    wallet: new LedgerWallet()
   }
 
+  let fromFile = new FromFile(optionsManualPrivateKey)
+
   const mewcore = MewCore.init(demoSignConfig)
+  mewcore.replaceWallet(fromFile)
 
   mewcore.web3.eth.getAccounts()
     .then(_account => {
@@ -195,7 +200,7 @@ test('use web3 methods to getAccount (Address) and get balance via Private Key',
     })
 })
 // ======================
-test('use web3 methods to getAccount (Address) and sign message via Private Key', function (t) {
+test('use web3 methods to getAccount (Address) and sign message via Private Key File', function (t) {
   t.plan(3)
 
   var toAddress = '0xE87395820dC5c005c2c580091b9aEd220240B099'
@@ -222,12 +227,13 @@ test('use web3 methods to getAccount (Address) and sign message via Private Key'
         "eth_estimateGas": "0x5af3107a4000"
       })
     ],
-    hardwareWallets: [
-      new FromFile(optionsFromPrivateKeyFile)
-    ]
+    wallet: new LedgerWallet()
   }
 
+  let fromFile = new FromFile(optionsFromPrivateKeyFile)
+
   const mewcore = MewCore.init(demoSignConfig)
+  mewcore.replaceWallet(fromFile)
 
   mewcore.web3.eth.getAccounts()
     .then(_account => {
@@ -247,7 +253,7 @@ test('use web3 methods to getAccount (Address) and sign message via Private Key'
     })
 })
 
-test('use web3 methods to getAccount (Address) and sign transaction via Private Key', function (t) {
+test('use web3 methods to getAccount (Address) and sign transaction via Private Key File', function (t) {
   t.plan(3)
 
   const demoSignConfig = {
@@ -269,10 +275,13 @@ test('use web3 methods to getAccount (Address) and sign transaction via Private 
         "eth_estimateGas": "0x5af3107a4000"
       })
     ],
-    wallet: new FromFile(optionsFromPrivateKeyFile)
+    wallet: new LedgerWallet()
   }
 
+  let fromFile = new FromFile(optionsFromPrivateKeyFile)
+
   const mewcore = MewCore.init(demoSignConfig)
+  mewcore.replaceWallet(fromFile)
 
   mewcore.web3.eth.getAccounts()
     .then(_account => {
@@ -301,7 +310,7 @@ test('use web3 methods to getAccount (Address) and sign transaction via Private 
     })
 })
 
-test('use web3 methods to getAccount (Address) and get balance via Private Key', function (t) {
+test('use web3 methods to getAccount (Address) and get balance via Private Key File', function (t) {
   t.plan(3)
 
   const demoSignConfig = {
@@ -323,12 +332,14 @@ test('use web3 methods to getAccount (Address) and get balance via Private Key',
         "eth_estimateGas": "0x5af3107a4000"
       })
     ],
-    hardwareWallets: [
-      new FromFile(optionsFromPrivateKeyFile)
-    ]
+    wallet: new LedgerWallet()
   }
 
+  let fromFile = new FromFile(optionsFromPrivateKeyFile)
+
   const mewcore = MewCore.init(demoSignConfig)
+
+  mewcore.replaceWallet(fromFile)
 
   mewcore.web3.eth.getAccounts()
     .then(_account => {

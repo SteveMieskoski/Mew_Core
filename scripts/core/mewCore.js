@@ -7,7 +7,7 @@ function MewCore() {
 
 MewCore.init = function (options) {
   this.mewEngine = this.setupProviders(options.providers)
-  this.addHardwareWallets(options.hardwareWallets)
+  this.addHardwareWallet(options.wallet)
   this.mewEngine.setNetwork(options.network)
   this.mewEngine.setTransport(options.transport)
   this.web3 = new Web3(this.mewEngine)
@@ -33,12 +33,16 @@ MewCore.setupProviders = function (providersArray = []) {
   return mewEngine
 }
 
-MewCore.addHardwareWallets = function (hardwareWallets) {
-  if(!hardwareWallets) return
-  for (let i = 0; i < hardwareWallets.length; i++) {
-    this.walletAcess = hardwareWallets[i] // expose wallet on MewCore
-    this.mewEngine.addProvider(new HardwareWalletProvider(hardwareWallets[i]))
-  }
+MewCore.addHardwareWallet = function (hardwareWallet) {
+  if(!hardwareWallet) return
+  this.walletAcess = hardwareWallet // expose wallet on MewCore
+  this.mewEngine.addProvider(new HardwareWalletProvider(hardwareWallet))
+}
+
+MewCore.replaceWallet = function (hardwareWallet) {
+  if(!hardwareWallet) return
+  this.walletAcess = hardwareWallet // expose wallet on MewCore
+  this.mewEngine.setNewWalletProvider(new HardwareWalletProvider(hardwareWallet))
 }
 
 // Some How this MUST NOT BE PUBLICLY ACCESSIBLE (must be limited in scope)

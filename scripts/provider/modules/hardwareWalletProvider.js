@@ -24,7 +24,7 @@ const hexRegex = /^[0-9A-Fa-f]+$/g
 //   eth_signTypedData
 //   personal_sign
 
-class HardwareWalletProvider extends ModuleInterface {
+class WalletProvider extends ModuleInterface {
   constructor (walletProvider) {
     super()
     // control flow
@@ -38,6 +38,8 @@ class HardwareWalletProvider extends ModuleInterface {
     }
     // data lookup
   }
+
+  thisIsWalletProvider(){} // Just used to identify whether or not a particular provider is a/the wallet provider
 
   // this could be moved to mewCore (Wallet provider gets set when type is selected)
   // NOTE: NEED TO THINK ABOUT THIS
@@ -173,4 +175,4 @@ function isValidHex (data) {
   return isValid
 }
 
-module.exports = HardwareWalletProvider
+module.exports = WalletProvider

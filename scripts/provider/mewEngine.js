@@ -2,6 +2,8 @@ const MewDefaults = require('./modules/mewDefaults')
 const allowableCheck = require('./modules/allowableCheck')
 const eachSeries = require('async/eachSeries')
 const asyncMap = require('async/map')
+const HardwareWalletProvider = require('../provider/modules/hardwareWalletProvider')
+
 
 class MewEngine extends MewDefaults {
   constructor () {
@@ -28,6 +30,16 @@ class MewEngine extends MewDefaults {
   setTransport (transport) {
     this.transport = transport
     this.transport.setNetwork(this.network)
+  }
+
+  setNewWalletProvider(walletProvider){
+    console.log(this._providers.all.length); // todo remove dev item
+    for(let i=0; i<this._providers.all.length; i++){
+      if(Reflect.has(this._providers.all[i], "thisIsWalletProvider")){
+        this._providers.all[i] = walletProvider
+        break;
+      }
+    }
   }
 
   setNetwork (networkDetails) {

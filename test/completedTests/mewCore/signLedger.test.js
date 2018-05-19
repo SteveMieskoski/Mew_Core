@@ -31,9 +31,7 @@ test('use web3 methods to getAccount (Address) and sign message via Ledger', fun
         "eth_estimateGas": "0x5af3107a4000"
       })
     ],
-    hardwareWallets: [
-      new LedgerWallet()
-    ]
+    wallet: new LedgerWallet()
   }
 
   const mewcore = MewCore.init(demoSignConfig)
