@@ -16,3 +16,7 @@ Examples:
 - Web3 1.0.0 is unstable (I've come across bugs or strange setups at least twice so far.
 
 - Web3 1.0.0 is very (how do i say it) confusing. not in the code, but it is broken up into so many pieces that it feels unwieldy
+
+
+
+- Look to replace xhr2 and xmlhttprequest in httpTransport with either axios or request

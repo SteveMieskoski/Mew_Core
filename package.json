@@ -9,6 +9,7 @@
     "babel-runtime": "^6.26.0",
     "bignumber.js": "^7.0.1",
     "bip39": "^2.5.0",
+    "request-promise-native": "^1.0.5",
     "rxjs": "^6.1.0",
     "rxjs-compat": "^6.1.0",
     "scrypt.js": "^0.2.0",
@@ -16,6 +17,7 @@
     "web3": "^1.0.0-beta.34",
     "web3-provider-engine": "^14.0.5"
   },
+  "optionalDependencies": {},
   "devDependencies": {
     "async": "^2.6.0",
     "babel-eslint": "^8.2.1",
@@ -38,7 +40,7 @@
     "idna-uts46": "^1.1.0",
     "json-rpc-error": "^2.0.0",
     "npm": "^6.0.1",
-    "request": "^2.85.0",
+    "request": "^2.87.0",
     "semaphore": "^1.1.0",
     "tape": "^4.9.0",
     "wallet-address-validator": "^0.1.7",

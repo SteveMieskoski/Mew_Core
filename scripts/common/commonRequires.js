@@ -10,5 +10,6 @@ module.exports = {
   WAValidator: require('wallet-address-validator'),
   bip39: require('bip39'),
   HDKey: require('hdkey'),
-  uts46: require('idna-uts46')
+  uts46: require('idna-uts46'),
+  request: require('request-promise-native')
 }
