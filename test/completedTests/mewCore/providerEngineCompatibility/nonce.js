@@ -1,13 +1,16 @@
 const test = require('tape')
 const Transaction = require('ethereumjs-tx')
 const ethUtil = require('ethereumjs-util')
-const ProviderEngine = require('../index.js')
-const FixtureProvider = require('../subproviders/fixture.js')
-const NonceTracker = require('../subproviders/nonce-tracker.js')
-const HookedWalletProvider = require('../subproviders/hooked-wallet.js')
-const TestBlockProvider = require('./util/block.js')
-const createPayload = require('../util/create-payload.js')
-const injectMetrics = require('./util/inject-metrics')
+const MewCore = require('../../../../scripts/core/index')
+const GenerateTransaction = require('../../../../scripts/provider/modules/generateTransaction.js')
+const fixtures = require('../../../fixtures/index')
+const FakeHttpProvider = fixtures.FakeHttpProvider
+const FixtureProvider = require('web3-provider-engine/subproviders/fixture.js')
+const NonceTracker = require('web3-provider-engine/subproviders/nonce-tracker.js')
+const HookedWalletProvider = require('web3-provider-engine/subproviders/hooked-wallet.js')
+const TestBlockProvider = require('web3-provider-engine/test/util/block.js')
+const createPayload = require('web3-provider-engine/util/create-payload.js')
+const injectMetrics = require('web3-provider-engine/test/util/inject-metrics')
 
 
 test('basic nonce tracking', function(t){
@@ -43,11 +46,23 @@ test('basic nonce tracking', function(t){
   // handle block requests
   var providerD = injectMetrics(new TestBlockProvider())
 
-  var engine = new ProviderEngine()
-  engine.addProvider(providerA)
-  engine.addProvider(providerB)
-  engine.addProvider(providerC)
-  engine.addProvider(providerD)
+  const demoSignConfig = {
+    transport: new fixtures.FakeHttpProvider(), // new HttpTransport(),
+    providers: [
+      providerA,
+      providerB,
+      providerC,
+      providerD,
+    ],
+  }
+
+  const mewcore = MewCore.init(demoSignConfig)
+  var engine = mewcore.engine;
+  // var engine = new ProviderEngine()
+  // engine.addProvider(providerA)
+  // engine.addProvider(providerB)
+  // engine.addProvider(providerC)
+  // engine.addProvider(providerD)
 
   var txPayload = {
     method: 'eth_sendTransaction',
@@ -123,11 +138,18 @@ test('nonce tracking - on error', function(t){
   // handle block requests
   var providerD = injectMetrics(new TestBlockProvider())
 
-  var engine = new ProviderEngine()
-  engine.addProvider(providerA)
-  engine.addProvider(providerB)
-  engine.addProvider(providerC)
-  engine.addProvider(providerD)
+  const demoSignConfig = {
+    transport: new fixtures.FakeHttpProvider(), // new HttpTransport(),
+    providers: [
+      providerA,
+      providerB,
+      providerC,
+      providerD,
+    ],
+  }
+
+  const mewcore = MewCore.init(demoSignConfig)
+  var engine = mewcore.engine;
 
   var txPayload = {
     method: 'eth_sendTransaction',
