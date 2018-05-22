@@ -150,7 +150,7 @@ class HttpTransport extends ModuleInterface {
    */
   sendAsync(payload, callback) {
     var request = this.prepareRequest(true)
-    console.log("httpTransport sendAsync", payload); // todo remove dev item
+    // console.log("httpTransport sendAsync", payload); // todo remove dev item
     request.onreadystatechange = function () {
       if (request.readyState === 4 && request.timeout !== 1) {
         var result = request.responseText

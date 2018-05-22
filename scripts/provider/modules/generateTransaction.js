@@ -1,4 +1,3 @@
-
 const common = require('../../common/index')
 const ethFuncs = common.ethFuncs
 const etherUnits = common.etherUnits
@@ -11,18 +10,20 @@ const toWei = common.toWei
 const ModuleInterface = require('./moduleInterface')
 
 class GenerateTransaction extends ModuleInterface {
-  constructor () {
+  constructor(opts) {
     super()
+    let options = opts || {};
+    this.signMethod = options.signMethod || "sign_tx";
     // console.log(ethFuncs); // todo remove dev item
   }
 
-  emitPayload (payload, cb) {
+  emitPayload(payload, cb) {
     super.emitPayload(payload, cb)
   }
 
   // need to account for offline case
-  handleRequest (payload, next, end) {
-    let txData
+  handleRequest(payload, next, end) {
+    let txData, data;
     switch (payload.method) {
       case 'generate_transaction':
         if (payload.txData) {
@@ -33,33 +34,57 @@ class GenerateTransaction extends ModuleInterface {
         try {
           var genTxWithInfo = (error, data) => {
             // if(error) throw error
-            console.log("genTxWithInfo", data); // todo remove dev item
             var rawTx = {
               nonce: sanitizeHex(data.nonce),
-              gasPrice: data.isOffline ? sanitizeHex(data.gasprice) : sanitizeHex(addTinyMoreToGas(data.gasprice)),
+              gasPrice: data.isOffline ? sanitizeHex(data.gasPrice) : !data.gasPrice ? sanitizeHex(addTinyMoreToGas(txData.gasPrice)) : sanitizeHex(addTinyMoreToGas(data.gasPrice)),
               gasLimit: txData.gasLimit ? sanitizeHex(decimalToHex(txData.gasLimit)) : sanitizeHex(decimalToHex(txData.gas)),
               to: sanitizeHex(txData.to),
               value: sanitizeHex(decimalToHex(toWei(txData.value, txData.unit))),
               data: txData.data ? sanitizeHex(txData.data) : ''
             }
+
             if (this.engine.network.eip155) rawTx.chainId = this.engine.network.chainId
             rawTx.data = rawTx.data === '' ? '0x' : rawTx.data
             // var eTx = new EthTx(rawTx)
 
             this.emitPayload({
               id: payload.id,
-              method: 'sign_tx',
+              method: this.signMethod,
               params: [rawTx]
             }, end)
           }
-
-          if (txData.nonce || txData.gasPrice) {
-            var data = {
+          if (txData.nonce && txData.gasPrice) {
+            data = {
               nonce: txData.nonce,
-              gasprice: txData.gasPrice
+              gasPrice: txData.gasPrice
             }
             data.isOffline = txData.isOffline ? txData.isOffline : false
+
             genTxWithInfo(null, data)
+
+          } else if (!txData.nonce && txData.gasPrice) {
+            data = {
+              nonce: txData.nonce,
+              gasPrice: txData.gasPrice
+            }
+            data.isOffline = txData.isOffline ? txData.isOffline : false
+console.log(txData); // todo remove dev item
+            this.emitIntermediate({
+              type: "batch",
+              balance: {
+                'id': getRandomBytes(16).toString('hex'),
+                'jsonrpc': '2.0',
+                'method': 'eth_getBalance',
+                'params': [txData.from, 'pending']
+              },
+              nonce: {
+                'id': getRandomBytes(16).toString('hex'),
+                'jsonrpc': '2.0',
+                'method': 'eth_getTransactionCount',
+                'params': [txData.from, 'pending']
+              }
+            }, genTxWithInfo)
+
           } else {
             this.emitIntermediate({
               type: "batch",
@@ -69,7 +94,7 @@ class GenerateTransaction extends ModuleInterface {
                 'method': 'eth_getBalance',
                 'params': [txData.from, 'pending']
               },
-              gasprice: {
+              gasPrice: {
                 'id': getRandomBytes(16).toString('hex'),
                 'jsonrpc': '2.0',
                 'method': 'eth_gasPrice',
@@ -111,7 +136,15 @@ class GenerateTransaction extends ModuleInterface {
     }
   }
 
-  cloneTxParams (txParams) {
+  getnonce() {
+
+  }
+
+  getGasPrice() {
+
+  }
+
+  cleanTxDataProperties(txParams) {
     return {
       from: txParams.from,
       to: txParams.to,

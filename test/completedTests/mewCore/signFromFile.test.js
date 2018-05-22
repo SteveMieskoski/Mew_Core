@@ -67,9 +67,7 @@ test('use web3 methods to getAccount (Address) and sign message via Private Key'
         "eth_estimateGas": "0x5af3107a4000"
       })
     ],
-    hardwareWallets: [
-      new FromFile(optionsManualPrivateKey)
-    ]
+    wallet: new FromFile(optionsManualPrivateKey)
   }
 
   const mewcore = MewCore.init(demoSignConfig)
@@ -114,9 +112,9 @@ test('use web3 methods to getAccount (Address) and sign transaction via Private 
         "eth_estimateGas": "0x5af3107a4000"
       })
     ],
-    hardwareWallets: [
+    wallet:
       new FromFile(optionsManualPrivateKey)
-    ]
+
   }
 
   const mewcore = MewCore.init(demoSignConfig)
@@ -170,9 +168,9 @@ test('use web3 methods to getAccount (Address) and get balance via Private Key',
         "eth_estimateGas": "0x5af3107a4000"
       })
     ],
-    hardwareWallets: [
+    wallet:
       new FromFile(optionsManualPrivateKey)
-    ]
+
   }
 
   const mewcore = MewCore.init(demoSignConfig)
@@ -222,9 +220,9 @@ test('use web3 methods to getAccount (Address) and sign message via Private Key'
         "eth_estimateGas": "0x5af3107a4000"
       })
     ],
-    hardwareWallets: [
+    wallet:
       new FromFile(optionsFromPrivateKeyFile)
-    ]
+
   }
 
   const mewcore = MewCore.init(demoSignConfig)
@@ -323,9 +321,9 @@ test('use web3 methods to getAccount (Address) and get balance via Private Key',
         "eth_estimateGas": "0x5af3107a4000"
       })
     ],
-    hardwareWallets: [
+    wallet:
       new FromFile(optionsFromPrivateKeyFile)
-    ]
+
   }
 
   const mewcore = MewCore.init(demoSignConfig)

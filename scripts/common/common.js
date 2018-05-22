@@ -64,6 +64,8 @@ function createPayload (data) {
 }
 
 /**
+ * stripHexPrefix
+ * From: https://github.com/SilentCicero/strip-hex-prefix
  * Removes '0x' from a given `String` if present
  * @param {String} str the string value
  * @return {String|Optional} a string by pass if necessary

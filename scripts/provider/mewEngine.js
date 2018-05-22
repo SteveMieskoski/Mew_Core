@@ -6,14 +6,24 @@ const HardwareWalletProvider = require('../provider/modules/hardwareWalletProvid
 
 
 class MewEngine extends MewDefaults {
-  constructor () {
+  constructor() {
     super()
-    this.receivedMethods = []; // todo remove dev item
-    this._providers = {all: []}
+    this.receivedMethods = new Set(); // todo remove dev item
+    this.afterFunctions = new Map();
+    this._providers = {all: []};
   }
 
-  addProvider (provider, method) {
-    if(!provider) throw "No Provider Supplied"
+  start(){ // just emits 'block' to emulate provider-engine because some of their providers expect this to begin operation
+    setTimeout(()=>{
+      this.emit('block')
+    }, 100)
+  }
+  stop(){
+
+  } // no-op
+
+  addProvider(provider, method) {
+    if (!provider) throw "No Provider Supplied"
     if (!method) {
       this._providers.all.push(provider) // these are provided the opportunity to interact with any method
     } else {
@@ -27,22 +37,22 @@ class MewEngine extends MewDefaults {
     provider.setEngine(this)
   }
 
-  setTransport (transport) {
+  setTransport(transport) {
     this.transport = transport
     this.transport.setNetwork(this.network)
   }
 
-  setNewWalletProvider(walletProvider){
-    console.log(this._providers.all.length); // todo remove dev item
-    for(let i=0; i<this._providers.all.length; i++){
-      if(Reflect.has(this._providers.all[i], "thisIsWalletProvider")){
+  setNewWalletProvider(walletProvider) {
+    // console.log(this._providers.all.length); // todo remove dev item
+    for (let i = 0; i < this._providers.all.length; i++) {
+      if (Reflect.has(this._providers.all[i], "thisIsWalletProvider")) {
         this._providers.all[i] = walletProvider
         break;
       }
     }
   }
 
-  setNetwork (networkDetails) {
+  setNetwork(networkDetails) {
     let createConfig = (_serverUrl, port, httpBasicAuthentication) => {
       this.network.SERVERURL = port ? _serverUrl + ':' + port : _serverUrl;
       if (httpBasicAuthentication) {
@@ -51,13 +61,14 @@ class MewEngine extends MewDefaults {
     }
     this.network = networkDetails ? networkDetails : this.networkDefaults
     createConfig(this.network.serverUrl, this.network.port, this.network.httpBasicAuthentication)
-    if(!this.transport.notPresent) this.transport.setNetwork(this.network)
+    if (!this.transport.notPresent) this.transport.setNetwork(this.network)
   }
 
-  send (payload) {
+  send(payload) {
     try {
       // let value;
       if (allowableCheck(payload.method) > -1) {
+        this.transportSent(payload, "sync");
         return this.transport.send(payload) // could replace this with a provider that catches the 'send' methods (but then fallthrough wouldn't work)
       } else {
         throw new Error('Web3ProviderEngine does not support synchronous requests.')
@@ -68,42 +79,43 @@ class MewEngine extends MewDefaults {
     //
   }
 
-  async sendAsync (payload, cb) {
+  async sendAsync(payload, cb) {
     // if (allowableCheck(payload.method) > -1) {
-      if (Array.isArray(payload)) {
-        // handle batch
-        console.log("\n\nhandle batch", payload); // todo remove dev item
-
-        try {
-          asyncMap(payload, this._handleAsync.bind(this), cb)
-        } catch (e) {
-          cb(e)
-        }
-      } else {
-        // handle single
-        this._handleAsync(payload, cb)
+    // console.log("\n--------------------------------\nsendAsync", payload); // todo remove dev item
+    this.receivedMethods.add(payload.method)
+    // handle batch
+    if (Array.isArray(payload)) {
+      try {
+        asyncMap(payload, this._handleAsync.bind(this), cb)
+      } catch (e) {
+        cb(e)
       }
+    } else {
+      // handle single
+      this._handleAsync(payload, cb)
+    }
     // } else {
     //   throw new Error('Web3ProviderEngine does not support synchronous requests.')
     // }
   }
 
-  _handleAsync (payload, finished) {
+  _handleAsync(payload, finished) {
     var _this = this
     var currentProvider = {all: -1}
     if (this._providers[payload.method]) {
       currentProvider[payload.method] = -1
     }
-    console.log("\n_handleAsync", payload); // todo remove dev item
+    // console.log("\n--------------------------------\n_handleAsync", payload); // todo remove dev item
     var result = null
     var error = null
-
+    this.afterFunctions.clear();
     var stack = []
 
     let end = (_error, _result) => {
       error = _error
       result = _result
-
+      // console.log("afterFunctions", this.afterFunctions); // todo remove dev item
+      // let stack = Array.from(this.afterFunctions.values());
       eachSeries(stack, function (fn, callback) {
         if (fn) {
           fn(error, result, callback)
@@ -111,15 +123,16 @@ class MewEngine extends MewDefaults {
           callback()
         }
       }, function () {
-        // console.log('COMPLETED:', payload)
-        // console.log('RESULT: ', result)
+        console.log('COMPLETED:', payload)
+        console.log('RESULT: ', result)
+        // _this.afterFunctions.delete(payload.method);
+        // _this.receivedMethods.delete(payload.method);
 
         var resultObj = {
           id: payload.id,
           jsonrpc: payload.jsonrpc,
           result: result
         }
-        // console.log("resultObj 1", resultObj); // todo remove dev item
         if (resultObj.result) {
           if (resultObj.result.jsonrpc === '2.0') {
             resultObj = resultObj.result
@@ -131,29 +144,35 @@ class MewEngine extends MewDefaults {
             }
           }
         }
-console.log("\n\nthis.receivedMethods", _this.receivedMethods); // todo remove dev item
+// console.log("\n\nthis.receivedMethods", _this.receivedMethods); // todo remove dev item
         if (error != null) {
           resultObj.error = {
             message: error.stack || error.message || error,
             code: -32000
           }
           // respond with both error formats
+          // _this.receivedMethods.pop();
           finished(error, resultObj)
         } else {
-          // console.log("\nmewEngine:139 resultObj", resultObj); // todo remove dev item
+          // console.log("\n===============================\n finished", resultObj); // todo remove dev item
+          // _this.receivedMethods.pop();
           finished(null, resultObj)
         }
       })
     }
 
-    let next = (after) => {
+    let next = (_after) => {
+      let after = _after;
       if (currentProvider[payload.method]) {
         currentProvider[payload.method] += 1
       } else {
         currentProvider.all += 1
       }
-      this.receivedMethods.push(payload.method)
-      stack.unshift(after)
+      if (_after) {
+        console.log("after", after); // todo remove dev item
+        this.afterFunctions.set(payload.method, _after);
+        stack.push(_after);
+      }
 
       // Bubbled down as far as we could go, and the request wasn't
       // handled. Return an error.
@@ -161,25 +180,24 @@ console.log("\n\nthis.receivedMethods", _this.receivedMethods); // todo remove d
       if (this._providers[payload.method]) {
         if (currentProvider[payload.method] >= _this._providers[payload.method].length) {
           if (allowableCheck(payload.method) > -1) {
-            console.log("engine transport", payload); // todo remove dev item
+            this.transportSent(payload, "sendAsync:METHOD");
             this.transport.sendAsync(payload, end)
           } else {
             end(new Error('Request for method "' + payload.method + '" not handled by any subprovider. Please check your subprovider configuration to ensure this method is handled.'))
           }
         } else {
           try {
-            // console.log("engine transport", payload); // todo remove dev item
-            // console.log(currentProvider) // todo remove dev item
             provider = _this._providers[payload.method][currentProvider[payload.method]]
             provider.handleRequest(payload, next, end)
           } catch (e) {
+            console.error(e);
             end(e)
           }
         }
       } else {
         if (currentProvider.all >= _this._providers.all.length) {
           if (allowableCheck(payload.method) > -1) {
-            console.log("engine transport", payload); // todo remove dev item
+            this.transportSent(payload, "sendAsync");
             this.transport.sendAsync(payload, end)
           } else {
             end(new Error('Request for method "' + payload.method + '" not handled by any subprovider. Please check your subprovider configuration to ensure this method is handled.'))
@@ -189,6 +207,7 @@ console.log("\n\nthis.receivedMethods", _this.receivedMethods); // todo remove d
             provider = _this._providers.all[currentProvider.all]
             provider.handleRequest(payload, next, end)
           } catch (e) {
+            console.error(e);
             end(e)
           }
         }
@@ -196,6 +215,17 @@ console.log("\n\nthis.receivedMethods", _this.receivedMethods); // todo remove d
     }
 
     next()
+  }
+
+
+  transportSent(payload, msg) {
+    if (msg) {
+      console.log("\nTRANSPORT SENT", payload, "MESSAGE: ", msg); // todo remove dev item
+
+    } else {
+      console.log("\nTRANSPORT SENT", payload); // todo remove dev item
+
+    }
   }
 }
 

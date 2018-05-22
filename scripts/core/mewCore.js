@@ -3,11 +3,12 @@ const HardwareWalletProvider = require('../provider/modules/hardwareWalletProvid
 const Web3 = require('web3')
 
 function MewCore() {
+  this.walletSet = false;
 }
 
 MewCore.init = function (options) {
   this.mewEngine = this.setupProviders(options.providers)
-  this.addHardwareWallet(options.wallet)
+  if(options.wallet) this.addHardwareWallet(options.wallet)
   this.mewEngine.setNetwork(options.network)
   this.mewEngine.setTransport(options.transport)
   this.web3 = new Web3(this.mewEngine)
@@ -18,8 +19,12 @@ MewCore.init = function (options) {
       }
     }
   }
+  this.engine = this.mewEngine; // alias for mewEngine
+  this.mewEngine.start(); // just emits 'block' to emulate provider-engine because some of their providers expect this to begin operation
   return this
 }
+
+
 
 MewCore.setupProviders = function (providersArray = []) {
   const mewEngine = new MewEngine()
@@ -27,16 +32,28 @@ MewCore.setupProviders = function (providersArray = []) {
     if (Reflect.has(providersArray[i], 'method')) {
       mewEngine.addProvider(providersArray[i], providersArray[i].method)
     } else {
+      if(providersArray[i].constructor.name === "HookedWalletSubprovider"){
+        this.walletSet = true;
+      }
       mewEngine.addProvider(providersArray[i])
     }
   }
   return mewEngine
 }
 
-MewCore.addHardwareWallet = function (hardwareWallet) {
-  if(!hardwareWallet) return
-  this.walletAcess = hardwareWallet // expose wallet on MewCore
-  this.mewEngine.addProvider(new HardwareWalletProvider(hardwareWallet))
+MewCore.addHardwareWallet = function (Wallet) {
+  if(!Wallet) return
+  if(this.walletSet){
+    console.warn( "A wallet provider already exists.  Multiple wallet providers can cause unexpected behavior")
+  }
+  this.walletAcess = Wallet // expose wallet on MewCore
+  if(Wallet.constructor.name === "HookedWalletSubprovider"){
+    this.mewEngine.addProvider(Wallet)
+    console.warn("Provider Engine HookedWalletSubprovider Based providers SHOULD be added via the providers array")
+    // throw "Provider Engine HookedWalletSubprovider Based providers MUST be added via the providers array"
+  } else {
+    this.mewEngine.addProvider(new HardwareWalletProvider(Wallet))
+  }
 }
 
 MewCore.replaceWallet = function (hardwareWallet) {
@@ -54,6 +71,7 @@ MewCore.addOperation = function (name, operator) {
 }
 
 MewCore.web3Extend = function (item) {
+  if(!item) return;
   if(Reflect.has(item, 'provider') && Reflect.has(item, 'method') && Reflect.has(item, 'methodName')){
     // console.log("item.provider", item.provider); // todo remove dev item
     // let newProvider = item.providerOptions ? new item.provider() : new item.provider(item.providerOptions)

@@ -15,6 +15,7 @@ class ModuleInterface {
   }
 
   emitIntermediate(payload, cb){
+    // console.log("\NemitIntermediate", payload); // todo remove dev item
     if(Array.isArray(payload)){
       this.emitPayload(payload, cb)
     } else if(payload.type === "batch") {
@@ -32,6 +33,8 @@ class ModuleInterface {
         for(let entry of resultTracker){
           resultReturn[entry[0]] = _allResults[entry[1]]
         }
+          console.log("\n---------\nemitIntermediate: resultReturn ", resultReturn); // todo remove dev item
+
           cb(null, resultReturn)
         })
         .catch(error => console.error(error))

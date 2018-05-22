@@ -25,7 +25,7 @@ const hexRegex = /^[0-9A-Fa-f]+$/g
 //   personal_sign
 
 class WalletProvider extends ModuleInterface {
-  constructor (walletProvider) {
+  constructor(walletProvider) {
     super()
     // control flow
     this.nonceLock = Semaphore(1)
@@ -39,11 +39,12 @@ class WalletProvider extends ModuleInterface {
     // data lookup
   }
 
-  thisIsWalletProvider(){} // Just used to identify whether or not a particular provider is a/the wallet provider
+  thisIsWalletProvider() {
+  } // Just used to identify whether or not a particular provider is a/the wallet provider
 
   // this could be moved to mewCore (Wallet provider gets set when type is selected)
   // NOTE: NEED TO THINK ABOUT THIS
-  setActiveWallet(activeWallet){
+  setActiveWallet(activeWallet) {
     if (this.confirmMethodsArePresent(activeWallet)) {
       this.walletProvider = activeWallet
     } else if (Reflect.has(activeWallet, 'signPersonalMessage')) {
@@ -52,14 +53,14 @@ class WalletProvider extends ModuleInterface {
     }
   }
 
-  confirmMethodsArePresent (walletProvider) {
+  confirmMethodsArePresent(walletProvider) {
     return (
       Reflect.has(walletProvider, 'signTransaction') &&
-    Reflect.has(walletProvider, 'getAccounts') &&
-    Reflect.has(walletProvider, 'signMessage'))
+      Reflect.has(walletProvider, 'getAccounts') &&
+      Reflect.has(walletProvider, 'signMessage'))
   }
 
-  handleRequest (payload, next, end) {
+  handleRequest(payload, next, end) {
     // switch statement is not block scoped  so we cant repeat var declarations
     let txParams, msgParams, extraParams
     let message, address
@@ -73,7 +74,7 @@ class WalletProvider extends ModuleInterface {
         // process normally
         this.walletProvider.getAccounts((err, accounts) => {
           if (err) return end(err)
-          if(!Array.isArray(accounts)){
+          if (!Array.isArray(accounts)) {
             end(null, [accounts])
           } else {
             end(null, accounts)
@@ -150,7 +151,7 @@ class WalletProvider extends ModuleInterface {
 //   return string.toLowerCase()
 // }
 
-function resemblesAddress (string) {
+function resemblesAddress(string) {
 
   const fixed = ethUtil.addHexPrefix(string)
   const isValid = ethUtil.isValidAddress(fixed)
@@ -159,13 +160,13 @@ function resemblesAddress (string) {
 
 // Returns true if resembles hex data
 // but definitely not a valid address.
-function resemblesData (string) {
+function resemblesData(string) {
   const fixed = ethUtil.addHexPrefix(string)
   const isValidAddress = ethUtil.isValidAddress(fixed)
   return !isValidAddress && isValidHex(string)
 }
 
-function isValidHex (data) {
+function isValidHex(data) {
   const isString = typeof data === 'string'
   if (!isString) return false
   const isHexPrefixed = data.slice(0, 2) === '0x'
