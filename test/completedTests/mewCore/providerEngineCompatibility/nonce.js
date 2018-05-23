@@ -13,7 +13,7 @@ const createPayload = require('web3-provider-engine/util/create-payload.js')
 const injectMetrics = require('web3-provider-engine/test/util/inject-metrics')
 
 
-test('basic nonce tracking', function(t){
+test('RUNNING: basic nonce tracking', function(t){
   t.plan(11)
 
   var privateKey = new Buffer('cccd8f4d88de61f92f3747e4a9604a0395e6ad5138add4bec4a2ddf231ee24f9', 'hex')
@@ -37,6 +37,8 @@ test('basic nonce tracking', function(t){
     eth_gasPrice: '0x1234',
     eth_getTransactionCount: '0x00',
     eth_sendRawTransaction: function(payload, next, done){
+      console.log("signedHash", payload); // todo remove dev item
+
       var rawTx = ethUtil.toBuffer(payload.params[0])
       var tx = new Transaction(rawTx)
       var hash = '0x'+tx.hash().toString('hex')
@@ -44,15 +46,18 @@ test('basic nonce tracking', function(t){
     },
   }))
   // handle block requests
-  var providerD = injectMetrics(new TestBlockProvider())
+  // var providerD = injectMetrics(new TestBlockProvider())
 
   const demoSignConfig = {
+    engineOptions: {
+      debug: true
+    },
     transport: new fixtures.FakeHttpProvider(), // new HttpTransport(),
     providers: [
       providerA,
       providerB,
       providerC,
-      providerD,
+      // providerD,
     ],
   }
 
@@ -74,11 +79,17 @@ test('basic nonce tracking', function(t){
     }]
   }
 
-  engine.start()
+  // engine.start()
   engine.sendAsync(createPayload(txPayload), function(err, response){
     t.ifError(err, 'did not error')
     t.ok(response, 'has response')
-
+// console.log("providerB payloadsWitnessed", providerB.payloadsWitnessed); // todo remove dev item
+//     console.log("providerC payloadsWitnessed", providerC.payloadsWitnessed); // todo remove dev item
+//     console.log("providerA payloadsWitnessed", providerA.payloadsWitnessed["eth_sendTransaction"][0].params); // todo remove dev item
+//
+//     console.log("providerB payloadsHandled", providerB.payloadsHandled); // todo remove dev item
+//     console.log("providerC payloadsHandled", providerC.payloadsHandled); // todo remove dev item
+//     console.log("providerA payloadsHandled", providerA.payloadsHandled); // todo remove dev item
     // tx nonce
     t.equal(providerB.getWitnessed('eth_getTransactionCount').length, 1, 'providerB did see "eth_getTransactionCount"')
     t.equal(providerB.getHandled('eth_getTransactionCount').length, 0, 'providerB did NOT handle "eth_getTransactionCount"')
@@ -94,11 +105,11 @@ test('basic nonce tracking', function(t){
     }), function(err, response){
       t.ifError(err, 'did not error')
       t.ok(response, 'has response')
-
+console.log("------------response", response); // todo remove dev item
       // tx nonce did increment
       t.equal(response.result, '0x01', 'the provider gives the correct pending nonce')
 
-      engine.stop()
+      // engine.stop()
       t.end()
 
     })
@@ -108,7 +119,8 @@ test('basic nonce tracking', function(t){
 })
 
 
-test('nonce tracking - on error', function(t){
+/*
+test('RUNNING: nonce tracking - on error', function(t){
   t.plan(11)
 
   var privateKey = new Buffer('cccd8f4d88de61f92f3747e4a9604a0395e6ad5138add4bec4a2ddf231ee24f9', 'hex')
@@ -185,6 +197,7 @@ test('nonce tracking - on error', function(t){
 
       // tx nonce did NOT increment
       t.equal(response.result, '0x00', 'the provider gives the correct pending nonce')
+      console.log("------------response", response); // todo remove dev item
 
       engine.stop()
       t.end()
@@ -193,4 +206,4 @@ test('nonce tracking - on error', function(t){
 
   })
 
-})
+})*/

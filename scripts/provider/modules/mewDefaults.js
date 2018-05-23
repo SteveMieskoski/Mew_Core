@@ -5,6 +5,13 @@ class MewDefaults extends EventEmitter {
   constructor(overRides){
     super()
 
+    this.walletConstructors = [
+      "HookedWalletSubprovider",
+      "WalletProvider",
+      "FromFile",
+      "LedgerWallet"
+    ]
+
     this.nodeTypes = {
       ETH: "ETH",
       ETC: "ETC",

@@ -2,23 +2,29 @@ const MewDefaults = require('./modules/mewDefaults')
 const allowableCheck = require('./modules/allowableCheck')
 const eachSeries = require('async/eachSeries')
 const asyncMap = require('async/map')
-const HardwareWalletProvider = require('../provider/modules/hardwareWalletProvider')
+const WalletWrapper = require('./modules/WalletWrapper')
 
 
 class MewEngine extends MewDefaults {
-  constructor() {
+  constructor(options) {
     super()
+    options = options || {};
+    this.debugOn = options.debug;
+    // else this.debugOn = true;
+
+    this.transportNotPresent = true;
     this.receivedMethods = new Set(); // todo remove dev item
     this.afterFunctions = new Map();
     this._providers = {all: []};
   }
 
-  start(){ // just emits 'block' to emulate provider-engine because some of their providers expect this to begin operation
-    setTimeout(()=>{
+  start() { // just emits 'block' to emulate provider-engine because some of their providers expect this to begin operation
+    setTimeout(() => {
       this.emit('block')
     }, 100)
   }
-  stop(){
+
+  stop() {
 
   } // no-op
 
@@ -38,30 +44,57 @@ class MewEngine extends MewDefaults {
   }
 
   setTransport(transport) {
+    this.transportNotPresent = false;
     this.transport = transport
+    // console.log(this.network); // todo remove dev item
     this.transport.setNetwork(this.network)
   }
 
   setNewWalletProvider(walletProvider) {
     // console.log(this._providers.all.length); // todo remove dev item
+    let newWalletSet = false;
     for (let i = 0; i < this._providers.all.length; i++) {
-      if (Reflect.has(this._providers.all[i], "thisIsWalletProvider")) {
-        this._providers.all[i] = walletProvider
-        break;
+      if (this.walletConstructors.indexOf(this._providers.all[i].constructor.name) > -1) {
+        // console.log("this._providers.all[i].constructor.name", this._providers.all[i].constructor.name); // todo remove dev item
+        if (!Reflect.has(walletProvider, "handleRequest")) {
+          this._providers.all[i] = new WalletWrapper(walletProvider)
+          newWalletSet = true;
+          break;
+        } else {
+          this._providers.all[i] = walletProvider
+          newWalletSet = true;
+          break;
+        }
+
       }
+    }
+    if (!newWalletSet) {
+      let newWallet;
+      if (!Reflect.has(walletProvider, "handleRequest")) {
+        // console.log("this._providers.all[i].constructor.name", walletProvider.constructor.name); // todo remove dev item
+
+        newWallet = new WalletWrapper(walletProvider)
+      } else {
+        newWallet = walletProvider
+      }
+      this.addProvider(newWallet)
     }
   }
 
   setNetwork(networkDetails) {
     let createConfig = (_serverUrl, port, httpBasicAuthentication) => {
-      this.network.SERVERURL = port ? _serverUrl + ':' + port : _serverUrl;
+      let network = {};
+      network.SERVERURL = port ? _serverUrl + ':' + port : _serverUrl;
       if (httpBasicAuthentication) {
-        this.network.headers['Authorization'] = 'Basic ' + btoa(httpBasicAuthentication.user + ":" + httpBasicAuthentication.password);
+        network.headers['Authorization'] = 'Basic ' + btoa(httpBasicAuthentication.user + ":" + httpBasicAuthentication.password);
       }
+      return network;
     }
-    this.network = networkDetails ? networkDetails : this.networkDefaults
-    createConfig(this.network.serverUrl, this.network.port, this.network.httpBasicAuthentication)
-    if (!this.transport.notPresent) this.transport.setNetwork(this.network)
+    // console.log(this.super.networkDefaults); // todo remove dev item
+    // console.log(this.networkDefaults); // todo remove dev item
+    this.network = networkDetails || this.networkDefaults
+    this.network = Object.assign(this.network, createConfig(this.network.serverUrl, this.network.port, this.network.httpBasicAuthentication))
+    if (!this.transportNotPresent) this.transport.setNetwork(this.network)
   }
 
   send(payload) {
@@ -123,8 +156,8 @@ class MewEngine extends MewDefaults {
           callback()
         }
       }, function () {
-        console.log('COMPLETED:', payload)
-        console.log('RESULT: ', result)
+        _this.debugLogging('COMPLETED:', payload)
+        _this.debugLogging('RESULT: ', result)
         // _this.afterFunctions.delete(payload.method);
         // _this.receivedMethods.delete(payload.method);
 
@@ -169,7 +202,7 @@ class MewEngine extends MewDefaults {
         currentProvider.all += 1
       }
       if (_after) {
-        console.log("after", after); // todo remove dev item
+        // this.debugLogging("after", after); // todo remove dev item
         this.afterFunctions.set(payload.method, _after);
         stack.push(_after);
       }
@@ -219,12 +252,20 @@ class MewEngine extends MewDefaults {
 
 
   transportSent(payload, msg) {
-    if (msg) {
-      console.log("\nTRANSPORT SENT", payload, "MESSAGE: ", msg); // todo remove dev item
+    if (this.debugOn) {
+      if (msg) {
+        console.log("\nTRANSPORT SENT", payload, "\nSENT VIA: ", msg, "\n"); // todo remove dev item
 
-    } else {
-      console.log("\nTRANSPORT SENT", payload); // todo remove dev item
+      } else {
+        console.log("\nTRANSPORT SENT", payload); // todo remove dev item
 
+      }
+    }
+  }
+
+  debugLogging(...args) {
+    if (this.debugOn) {
+      console.log(args); // todo remove dev item
     }
   }
 }

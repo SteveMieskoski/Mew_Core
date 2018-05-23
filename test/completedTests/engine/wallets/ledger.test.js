@@ -7,7 +7,7 @@ const ethUtil = common.ethUtil
 const injectMetrics = require('../../../fixtures/injectSubproviderMetrics')
 const Transaction = common.tx
 const LedgerWallet = require('../../../../scripts/wallets/hardware/ledger/ledgerWallet')
-const HardwareWalletProvider = require('../../../../scripts/provider/modules/hardwareWalletProvider')
+const HardwareWalletProvider = require('../../../../scripts/provider/modules/WalletWrapper')
 
 const ledgerAddress = '0x7676E10eefc7311970A12387518442136ea14D81'
 /**

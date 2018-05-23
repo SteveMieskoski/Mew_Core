@@ -8,7 +8,7 @@ const createPayload = require('web3-provider-engine/util/create-payload.js')
 const injectMetrics = require('web3-provider-engine/test/util/inject-metrics')
 
 
-test('fallthrough test', function(t){
+test('RUNNING: basic MewCore setup test', function(t){
   t.plan(8)
 
   // handle nothing

@@ -1,7 +1,7 @@
 const test = require('tape')
-const MewEngine = require('../../scripts/provider/mewEngine')
-const HttpProvider = require('../../scripts/provider/modules/httpTransport.js')
-const common = require('../../scripts/common/index')
+const MewEngine = require('../../../../scripts/provider/mewEngine')
+const HttpProvider = require('../../../../scripts/provider/modules/httpTransport.js')
+const common = require('../../../../scripts/common/index')
 const createPayload = common.createPayload
 const Web3 = require('web3')
 

@@ -12,7 +12,7 @@ const createPayload = require('web3-provider-engine/util/create-payload.js')
 const injectMetrics = require('web3-provider-engine/test/util/inject-metrics')
 
 
-test('tx sig', function (t) {
+test('RUNNING: tx sig', function (t) {
   t.plan(12)
 
   var privateKey = new Buffer('cccd8f4d88de61f92f3747e4a9604a0395e6ad5138add4bec4a2ddf231ee24f9', 'hex')
@@ -98,7 +98,7 @@ test('tx sig', function (t) {
 
 })
 
-test('no such account', function (t) {
+test('RUNNING: no such account', function (t) {
   t.plan(1)
 
   var addressHex = '0x1234362ef32bcd26d3dd18ca749378213625ba0b'
@@ -160,7 +160,7 @@ test('no such account', function (t) {
 })
 
 
-test('sign message', function (t) {
+test('RUNNING: sign message', function (t) {
   t.plan(3)
 
   var privateKey = new Buffer('cccd8f4d88de61f92f3747e4a9604a0395e6ad5138add4bec4a2ddf231ee24f9', 'hex')
@@ -283,7 +283,7 @@ signatureTest({
   privateKey: new Buffer('6969696969696969696969696969696969696969696969696969696969696969', 'hex'),
 })
 
-test('sender validation, with mixed-case', function (t) {
+test('RUNNING: sender validation, with mixed-case', function (t) {
   t.plan(1)
 
   var senderAddress = '0xE4660fdAb2D6Bd8b50C029ec79E244d132c3bc2B'
@@ -363,7 +363,7 @@ function signatureTest({testLabel, method, privateKey, addressHex, message, sign
   }
 
   singleRpcTest({
-    testLabel: `sign message ${method} - ${testLabel}`,
+    testLabel: `RUNNING: sign message ${method} - ${testLabel}`,
     payload,
     engine,
     expectedResult: signature,
@@ -378,7 +378,7 @@ function signatureTest({testLabel, method, privateKey, addressHex, message, sign
     }
 
     singleRpcTest({
-      testLabel: `sign message ${method} - ${testLabel}`,
+      testLabel: `RUNNING: sign message ${method} - ${testLabel}`,
       payload,
       engine,
       expectedResult: signature,
@@ -418,7 +418,7 @@ function recoverTest({testLabel, method, addressHex, message, signature}) {
   }
 
   singleRpcTest({
-    testLabel: `recover message ${method} - ${testLabel}`,
+    testLabel: `RUNNING: recover message ${method} - ${testLabel}`,
     payload,
     engine,
     expectedResult: addressHex,

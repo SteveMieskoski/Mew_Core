@@ -5,7 +5,7 @@ const common = require('../../../scripts/common/index')
 const createPayload = common.createPayload
 const Web3 = require('web3')
 
-test('allow uncaught and permitted method to fall through', function (t) {
+test('RUNNING: Allow an uncaught and permitted method to fall through', function (t) {
   t.plan(2)
 
   var privateKey = new Buffer('cccd8f4d88de61f92f3747e4a9604a0395e6ad5138add4bec4a2ddf231ee24f9', 'hex')

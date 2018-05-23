@@ -7,7 +7,7 @@ const FixtureProvider = require('../../fixtures/fixtureProvider')
 const createPayload = require('../../../scripts/common/index').createPayload
 const injectMetrics = require('../../fixtures/injectSubproviderMetrics')
 
-test('fallthrough test', function (t) {
+test('RUNNING: basic engine setup test', function (t) {
   t.plan(6)
 
   // handle nothing

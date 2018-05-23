@@ -6,7 +6,7 @@ const injectMetrics = require('../../../fixtures/injectSubproviderMetrics')
 const FromFile = require('../../../../scripts/wallets/software/fromFile')
 const display = false
 
-const HardwareWalletProvider = require('../../../../scripts/provider/modules/hardwareWalletProvider')
+const HardwareWalletProvider = require('../../../../scripts/provider/modules/WalletWrapper')
 
 const fromAddress = '0x7676E10eefc7311970A12387518442136ea14D81'
 /**

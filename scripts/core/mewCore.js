@@ -1,14 +1,16 @@
 const MewEngine = require('../provider/mewEngine')
-const HardwareWalletProvider = require('../provider/modules/hardwareWalletProvider')
+const HardwareWalletProvider = require('../provider/modules/WalletWrapper')
 const Web3 = require('web3')
 
 function MewCore() {
   this.walletSet = false;
+  this.engineOptions = {};
 }
 
 MewCore.init = function (options) {
   this.mewEngine = this.setupProviders(options.providers)
   if(options.wallet) this.addHardwareWallet(options.wallet)
+  if(options.engineOptions) this.engineOptions = options.engineOptions
   this.mewEngine.setNetwork(options.network)
   this.mewEngine.setTransport(options.transport)
   this.web3 = new Web3(this.mewEngine)
@@ -27,7 +29,7 @@ MewCore.init = function (options) {
 
 
 MewCore.setupProviders = function (providersArray = []) {
-  const mewEngine = new MewEngine()
+  const mewEngine = new MewEngine(this.engineOptions)
   for (let i = 0; i < providersArray.length; i++) {
     if (Reflect.has(providersArray[i], 'method')) {
       mewEngine.addProvider(providersArray[i], providersArray[i].method)

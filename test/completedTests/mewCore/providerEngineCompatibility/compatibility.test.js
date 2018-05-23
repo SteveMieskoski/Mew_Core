@@ -57,7 +57,7 @@ let optionsFromPrivateKeyFile = {
   filePassword: "123456789"
 }
 
-test('use web3 methods to getAccount (Address) and sign message via Private Key', function (t) {
+test('RUNNING: use web3 methods to getAccount (Address) and sign message via Private Key', function (t) {
   t.plan(6)
   var privateKey = new Buffer('cccd8f4d88de61f92f3747e4a9604a0395e6ad5138add4bec4a2ddf231ee24f9', 'hex')
   var address = new Buffer('1234362ef32bcd26d3dd18ca749378213625ba0b', 'hex')

@@ -10,7 +10,7 @@ const LedgerWallet = require('../scripts/wallets/hardware/ledger/ledgerWallet')
 // const NonceTracker = require('../subproviders/nonce-tracker.js')
 // const HookedWalletProvider = require('../scripts/wallets/scraps/hookedWalletDropIn')
 const HookedWalletTxProvider = require('../scripts/wallets/scraps/hookedWalletTxDropIn')
-const HardwareWalletProvider = require('../scripts/provider/modules/hardwareWalletProvider')
+const HardwareWalletProvider = require('../scripts/provider/modules/WalletWrapper')
 
 const ledgerAddress = '0x7676E10eefc7311970A12387518442136ea14D81'
 /**

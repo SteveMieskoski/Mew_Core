@@ -46,11 +46,18 @@ class HttpTransport extends ModuleInterface {
    */
   constructor(host, timeout, user, password, headers) {
     super()
-    this.host = host || 'http://localhost:7545'
-    this.timeout = timeout || 0
-    this.user = user
-    this.password = password
-    this.headers = headers
+    this.network = {
+      host: host || 'http://localhost:7545',
+      timeout: timeout || 0,
+      user: user,
+      password: password,
+      headers: headers
+    }
+    this.host = this.network.host
+    this.timeout = this.network.timeout || 0
+    this.user = this.network.user
+    this.password = this.network.password
+    this.headers = this.network.headers
   }
 
   handleRequest(payload, next, end) {
@@ -70,10 +77,11 @@ class HttpTransport extends ModuleInterface {
   }
 
   setNetwork(details) {
-    this.host = details.SERVERURL
-    this.user = details.user
-    this.password = details.password
-    this.headers = details.headers
+    this.network = Object.assign(this.network, details);
+    // this.host = details.SERVERURL
+    // this.user = details.user
+    // this.password = details.password
+    // this.headers = details.headers
   }
 
   /**
@@ -129,7 +137,6 @@ class HttpTransport extends ModuleInterface {
     var result = request.responseText
 
     try {
-      console.log(result) // todo remove dev item
       result = JSON.parse(result)
     } catch (e) {
       console.error('InvalidResponse:', request.responseText) // todo remove dev item
@@ -150,14 +157,16 @@ class HttpTransport extends ModuleInterface {
    */
   sendAsync(payload, callback) {
     var request = this.prepareRequest(true)
-    // console.log("httpTransport sendAsync", payload); // todo remove dev item
     request.onreadystatechange = function () {
       if (request.readyState === 4 && request.timeout !== 1) {
         var result = request.responseText
         var error = null
 
         try {
-          result = JSON.parse(result)
+          if(typeof result === 'string' && result !== ""){
+            result = JSON.parse(result)
+          }
+
         } catch (e) {
           console.error('InvalidResponse:', request.responseText) // todo remove dev item
 

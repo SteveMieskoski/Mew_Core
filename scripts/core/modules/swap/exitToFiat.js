@@ -15,6 +15,7 @@ class ExitToFiat {
     this.bityExitUrlBase = "http://localhost:3000" // "https://bity.com"
     this.orders = {}; //new Map();
     this.currentOrder = null;
+    this.phoneToken = null;
     this.currentOrderUrl = null;
     // mewcore.web3.eth.getAccounts()
     //   .then(_account => {})
@@ -24,36 +25,38 @@ class ExitToFiat {
     this.fromAddress = address;
   }
 
+  setOrderUrl(url) {
+    console.log("\n" + url); // todo remove dev item
+    this.currentOrderUrl = url;
+  }
+
+  setPhoneToken(token) {
+    this.phoneToken = token;
+  }
+
   // returns a promise
   createOrder(options) {
-    // if (!options.payload) {
-    //   throw "Error No POST payload supplied";
-    // } else if (!options.payload.phone) {
-    //   throw "Error No phone number supplied";
-    // }
-    // this.phone = options.phone;
     let requestOptions = {
       method: 'POST',
       uri: this.bityExitUrlBase + bityEndPoints.submitOrder,
+      headers: {
+        'x-phone-token': this.phoneToken
+      },
       body: options,
       json: true, // Automatically stringifies the body to JSON
-      resolveWithFullResponse: true,
-      transform: (body, response, resolveWithFullResponse) => {
-        this.currentOrderUrl = response.headers['Location'];
-        return body;
-      }
+      resolveWithFullResponse: true
     };
+
     return request(requestOptions)
-    // .then((_response) => {
-    //   console.log(_response); // todo remove dev item
-    //   // this.orders.set(_response.headers.)
-    // })
+      .then((_response) => {
+        this.setOrderUrl(_response.headers["location"])
+        return _response
+      })
   }
 
 
   // returns a promise
   submitPhone(phone) {
-    this.phone = phone;
     let requestOptions = {
       method: 'POST',
       uri: this.bityExitUrlBase + bityEndPoints.submitPhone,
@@ -62,37 +65,40 @@ class ExitToFiat {
       resolveWithFullResponse: true
     };
     return request(requestOptions)
+      .then((_response) => {
+        this.setPhoneToken(_response.headers["x-phone-token"])
+        return _response
+      })
   }
 
 
   verifyPhone(tan) {
-      // this.phone = options.phone;
-      let requestOptions = {
-        method: 'POST',
-        uri: this.bityExitUrlBase + bityEndPoints.submitTan,
-        body: {"tan": tan},
-        json: true, // Automatically stringifies the body to JSON
-        resolveWithFullResponse: true,
-        transform: (body, response, resolveWithFullResponse) => {
-          this.currentOrderUrl = response.headers['Location'];
-          return body;
-        }
-      };
-      return request(requestOptions)
+    console.log(this.phoneToken); // todo remove dev item
+    // this.phone = options.phone;
+    let requestOptions = {
+      method: 'POST',
+      uri: this.bityExitUrlBase + bityEndPoints.submitTan,
+      headers: {
+        'x-phone-token': this.phoneToken
+      },
+      body: {"tan": tan},
+      json: true, // Automatically stringifies the body to JSON
+      resolveWithFullResponse: true
+    };
+    return request(requestOptions)
   }
 
-  queryStatus(){
+  queryStatus() {
     // this.phone = options.phone;
     let requestOptions = {
       method: 'GET',
       uri: this.currentOrderUrl + bityEndPoints.submitTan,
+      headers: {
+        'x-phone-token': this.phoneToken
+      },
       // body: options.payload,
       json: true, // Automatically stringifies the body to JSON
-      resolveWithFullResponse: true,
-      transform: (body, response, resolveWithFullResponse) => {
-        this.currentOrderUrl = response.headers['Location'];
-        return body;
-      }
+      resolveWithFullResponse: true
     };
     return request(requestOptions)
   }
