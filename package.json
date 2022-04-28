@@ -17,7 +17,7 @@
     "web3-provider-engine": "^14.0.5"
   },
   "devDependencies": {
-    "async": "^2.6.0",
+    "async": "^2.6.4",
     "babel-eslint": "^8.2.1",
     "chai": "^4.1.2",
     "crypto": "^1.0.1",
